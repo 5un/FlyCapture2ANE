@@ -1,0 +1,16 @@
+<extension xmlns="http://ns.adobe.com/air/extension/3.4">
+    <id>com.asunnotthesun.adobeair.extensions.FlyCapture2Extension</id>
+    <versionNumber>1.0.0</versionNumber>
+    <platforms>
+        <platform name="Windows-x86">
+            <applicationDeployment>
+                <nativeLibrary>FlyCapture2ANE.dll</nativeLibrary>
+                <initializer>FlyCapture2Initializer</initializer>
+                <finalizer>FlyCapture2Finalizer</finalizer>
+            </applicationDeployment>
+        </platform>
+		<platform name="default"> 
+            <applicationDeployment/> 
+        </platform> 
+    </platforms>
+</extension>

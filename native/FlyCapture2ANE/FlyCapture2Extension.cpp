@@ -38,6 +38,7 @@ extern "C"
 	*/
 	void contextInitializer(void* extData, const uint8_t* ctxType, FREContext ctx, uint32_t* numFunctions, const FRENamedFunction** functions)
     {
+		/*
         if ( 0 == strcmp( (const char*) ctxType, "shared" ) )
 		{
 			*numFunctions = sizeof( _Static_methods ) / sizeof( FRENamedFunction );
@@ -45,11 +46,13 @@ extern "C"
 		}
 		else
         {
-			/*
             *numFunctions = sizeof( _Instance_methods ) / sizeof( FRENamedFunction );
-            *functions = _Instance_methods;
-			*/
+            *functions = _Instance_methods;	
 		}
+		*/
+
+		*numFunctions = sizeof( _Static_methods ) / sizeof( FRENamedFunction );
+		*functions = _Static_methods;
 	}
     
 	void contextFinalizer(FREContext ctx)
