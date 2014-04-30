@@ -24,12 +24,18 @@
     <ClInclude Include="FlyCapture2Extension.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="FC2Manager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="FlyCapture2Extension.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="FC2Manager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

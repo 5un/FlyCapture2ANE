@@ -1,3 +1,4 @@
+cp ../../native/Debug/FlyCapture2ANE.dll windows/FlyCapture2ANE.dll
 jar xf FlyCapture2Extension.swc
 del /F catalog.xml
 move library.swf windows/

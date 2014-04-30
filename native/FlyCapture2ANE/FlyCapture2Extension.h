@@ -3,7 +3,14 @@
 extern "C"
 {
     
+	FREObject FlyCapture2_init(FREContext ctx, void* funcData, uint32_t argc, FREObject argv[]);
 	FREObject FlyCapture2_getVersion(FREContext ctx, void* funcData, uint32_t argc, FREObject argv[]);
+	FREObject FlyCapture2_getNumCameras(FREContext ctx, void* funcData, uint32_t argc, FREObject argv[]);
+	FREObject FlyCapture2_startCamera(FREContext ctx, void* funcData, uint32_t argc, FREObject argv[]);
+	FREObject FlyCapture2_stopCamera(FREContext ctx, void* funcData, uint32_t argc, FREObject argv[]);
+	FREObject FlyCapture2_getRGBFrame(FREContext ctx, void* funcData, uint32_t argc, FREObject argv[]);
+
+	FREObject FlyCapture2_grabImage(FREContext ctx, void* funcData, uint32_t argc, FREObject argv[]);
 
     //methods
 	/*
