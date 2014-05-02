@@ -74,8 +74,9 @@ package com.asunnotthesun.adobeair.extensions
 			
 			context.call("grabImage", index, imageByteArray);
 			imageByteArray.position = 0;
-			imageByteArray.endian = Endian.LITTLE_ENDIAN;
-
+			//imageByteArray.endian = Endian.LITTLE_ENDIAN;
+			imageByteArray.endian = Endian.BIG_ENDIAN;
+			
 			trace('total bytes : ' + imageByteArray.length);
 			
 			if(imageData!=null && imageByteArray!=null){
@@ -91,8 +92,9 @@ package com.asunnotthesun.adobeair.extensions
 			
 			context.call("getRGBFrame", imageByteArray);
 			imageByteArray.position = 0;
-			imageByteArray.endian = Endian.BIG_ENDIAN;
-						
+			//imageByteArray.endian = Endian.BIG_ENDIAN;
+			imageByteArray.endian = Endian.LITTLE_ENDIAN;
+			
 			if(imageData!=null && imageByteArray!=null){
 				imageData.setPixels(imageData.rect, imageByteArray);
 				return imageData;	

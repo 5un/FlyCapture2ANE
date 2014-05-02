@@ -45,6 +45,14 @@ extern "C"
 		return retObj;
 	}
 
+	FREObject FlyCapture2_getCameraInfo(FREContext ctx, void* funcData, uint32_t argc, FREObject argv[]){
+		FREObject retObj;
+		
+		unsigned int nr; FREGetObjectAsUint32(argv[0], &nr);
+		retObj = fc2Manager.getCameraInfo(nr);
+		return retObj;
+	}
+
 	FREObject FlyCapture2_startCamera(FREContext ctx, void* funcData, uint32_t argc, FREObject argv[]){
 		FREObject retObj;
 		
@@ -72,6 +80,7 @@ extern "C"
 		{ (const uint8_t*) "init", 0, FlyCapture2_init},
 		{ (const uint8_t*) "getVersion", 0, FlyCapture2_getVersion},
 		{ (const uint8_t*) "getNumCameras", 0, FlyCapture2_getNumCameras},
+		{ (const uint8_t*) "getCameraInfo", 0, FlyCapture2_getCameraInfo},
 		{ (const uint8_t*) "startCamera", 0, FlyCapture2_startCamera},
 		{ (const uint8_t*) "stopCamera", 0, FlyCapture2_stopCamera},
 		{ (const uint8_t*) "getRGBFrame", 0, FlyCapture2_getRGBFrame},

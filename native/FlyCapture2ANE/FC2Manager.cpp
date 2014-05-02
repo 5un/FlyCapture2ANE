@@ -1,10 +1,11 @@
 #include "FC2Manager.h"
 #include <stdlib.h>
+#include <string.h>
 
 FC2Manager::FC2Manager(){}
 
 FREContext FC2Manager::freContext = NULL;
-FlyCapture2::Image* FC2Manager::m_processedImage;
+FlyCapture2::Image FC2Manager::m_processedImage;
 
 int FC2Manager::getNumCameras(){
 	FlyCapture2::BusManager busManager;
@@ -33,13 +34,12 @@ void FC2Manager::onImageGrabbed(FlyCapture2::Image* pImage, const void* pCallbac
 	FlyCapture2::Error error;
     // Convert the raw image
 	FlyCapture2::Image newImage;
-	error = pImage->Convert(FlyCapture2::PIXEL_FORMAT_RGBU, &newImage);
+	error = pImage->Convert(FlyCapture2::PIXEL_FORMAT_BGRU, &m_processedImage);
     if (error != FlyCapture2::PGRERROR_OK)
     {
 		//PrintError( error );
         return;
     }  
-	m_processedImage = &newImage;
 
 }
 
@@ -93,7 +93,7 @@ void FC2Manager::startCamera(int index){
         return;
     }
 
-	m_processedImage = new FlyCapture2::Image;
+	//m_processedImage = new FlyCapture2::Image;
 }
 
 void FC2Manager::stopCamera(){
@@ -116,13 +116,45 @@ void FC2Manager::stopCamera(){
     }
 }
 
+FREObject FC2Manager::getCameraInfo(int index){
+	FlyCapture2::Error error;
+	FlyCapture2::Camera cam;
+	FlyCapture2::BusManager busManager;
+
+	unsigned int numCameras = 0;
+    error = busManager.GetNumOfCameras(&numCameras);
+    if (error != FlyCapture2::PGRERROR_OK)
+    {
+        return NULL;
+	}
+	if(index > (numCameras-1)) return NULL;
+
+	FlyCapture2::PGRGuid guid;
+	error = cam.Connect(&guid);
+    if (error != FlyCapture2::PGRERROR_OK)
+    {
+        PrintError( error );
+        return NULL;
+    }
+
+    FlyCapture2::CameraInfo camInfo;
+    error = cam.GetCameraInfo(&camInfo);
+    if (error != FlyCapture2::PGRERROR_OK)
+    {
+        PrintError( error );
+        return NULL;
+    }
+
+	return FC2Manager::FREObjectFromCameraInfo(&camInfo);
+}
+
 void FC2Manager::getRGBFrame(FREObject argv[]){  
 	
 	FlyCapture2::Error error;
 	
 	unsigned int rows,cols,stride;
     FlyCapture2::PixelFormat format;
-    m_processedImage->GetDimensions( &rows, &cols, &stride, &format );  
+    m_processedImage.GetDimensions( &rows, &cols, &stride, &format );  
 	PrintImageInfo(rows, cols, stride);
 
 	FRETrace((const uint8_t*)"[FlyCapture2] Copy");
@@ -134,7 +166,7 @@ void FC2Manager::getRGBFrame(FREObject argv[]){
 	FRENewObjectFromUint32(numRGBBytes, &length);
 	FRESetObjectProperty(objectByteArray, (const uint8_t*) "length", length, NULL);
 	FREAcquireByteArray(objectByteArray, &byteArray);
-	memcpy(byteArray.bytes, m_processedImage->GetData(), numRGBBytes);
+	memcpy(byteArray.bytes, m_processedImage.GetData(), numRGBBytes);
 	FREReleaseByteArray(objectByteArray);
 }
 
@@ -273,17 +305,14 @@ void FC2Manager::FRETrace(const uint8_t* message){
 	FREDispatchStatusEventAsync(freContext, (const uint8_t*) "trace", message);
 }
 
-void FC2Manager::getCameraInfo(int index){
-	
-
-}
-
 void FC2Manager::setFreContext(FREContext pFreContext)
 {
 	freContext = pFreContext;
 }
 
+//////////////////////////////////////////////////////////////
 // Utils
+//////////////////////////////////////////////////////////////
 
 void FC2Manager::PrintError( FlyCapture2::Error error )
 {
@@ -316,6 +345,33 @@ void FC2Manager::PrintCameraInfo( FlyCapture2::CameraInfo* pCamInfo )
 	//FREDispatchStatusEventAsync(freContext, (const uint8_t*) "trace",(const uint8_t*) cameraInfoStr);
 
 	FREDispatchStatusEventAsync(freContext, (const uint8_t*) "trace",(const uint8_t*) "getCamInfo");
+}
+
+FREObject FC2Manager::FREObjectFromCameraInfo( FlyCapture2::CameraInfo* pCamInfo )
+{
+	FREObject freCamInfo;
+	FREObject freSerialNumber, freModelName, freVendorName, freSensorInfo, freSensorResolution, freFirmwareVersion,
+			freFirmwareBuildTime;
+
+	FRENewObject((const uint8_t*)"Object", 0, NULL, &freCamInfo,NULL);
+
+	FRENewObjectFromUint32( pCamInfo->serialNumber, &freSerialNumber);
+	FRENewObjectFromUTF8(strlen((const char*) pCamInfo->modelName)+1, (const uint8_t*) pCamInfo->modelName, &freModelName);
+	FRENewObjectFromUTF8(strlen((const char*) pCamInfo->vendorName)+1, (const uint8_t*) pCamInfo->vendorName, &freVendorName);
+	FRENewObjectFromUTF8(strlen((const char*) pCamInfo->sensorInfo)+1, (const uint8_t*) pCamInfo->sensorInfo, &freSensorInfo);
+	FRENewObjectFromUTF8(strlen((const char*) pCamInfo->sensorResolution)+1, (const uint8_t*) pCamInfo->sensorResolution, &freSensorResolution);
+	FRENewObjectFromUTF8(strlen((const char*) pCamInfo->firmwareVersion)+1, (const uint8_t*) pCamInfo->firmwareVersion, &freFirmwareVersion);
+	FRENewObjectFromUTF8(strlen((const char*) pCamInfo->firmwareBuildTime)+1, (const uint8_t*) pCamInfo->firmwareBuildTime, &freFirmwareBuildTime);
+
+	FRESetObjectProperty(freCamInfo, (const uint8_t*)"serialNumber", freSerialNumber, NULL);
+    FRESetObjectProperty(freCamInfo, (const uint8_t*)"modelName", freModelName, NULL);
+    FRESetObjectProperty(freCamInfo, (const uint8_t*)"vendorName", freVendorName, NULL);
+	FRESetObjectProperty(freCamInfo, (const uint8_t*)"sensorInfo", freVendorName, NULL);
+	FRESetObjectProperty(freCamInfo, (const uint8_t*)"sensorResolution", freVendorName, NULL);
+	FRESetObjectProperty(freCamInfo, (const uint8_t*)"firmwareVersion", freFirmwareVersion, NULL);
+	FRESetObjectProperty(freCamInfo, (const uint8_t*)"firmwareBuildTime", freFirmwareBuildTime, NULL);
+
+	return freCamInfo;	
 }
 
 void FC2Manager::PrintImageInfo(int width, int height, int stride){

@@ -13,7 +13,11 @@ public:
 
 	void					startCamera(int index);
 	void					stopCamera();
-	void					getCameraInfo(int index);
+	
+	FREObject				getCameraInfo(int index);
+	void					setCameraProperty();
+	FREObject				getCameraProperty();
+
 	void					setFreContext(FREContext pFreContext);
 	void					getRGBFrame(FREObject argv[]);
 
@@ -21,11 +25,13 @@ public:
 
 	static void				onImageGrabbed(FlyCapture2::Image* pImage, const void* pCallbackData);
 
+	static FREObject		FREObjectFromCameraInfo(FlyCapture2::CameraInfo* pCamInfo);
+
 protected:
-	static FREContext		freContext;
-	FlyCapture2::Image		m_rawImage;
-    static FlyCapture2::Image*		m_processedImage;
-	FlyCapture2::Camera		mainCamera;
+	static FREContext				freContext;
+	FlyCapture2::Image				m_rawImage;
+    static FlyCapture2::Image		m_processedImage;
+	FlyCapture2::Camera				mainCamera;
 
 private:
 	void					PrintError( FlyCapture2::Error error );
