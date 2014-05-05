@@ -27,8 +27,8 @@
 			bitmap = new Bitmap();
 			bitmap.x = 0;
 			bitmap.y = 0;			
-			//bitmap.scaleX = 0.25;
-			//bitmap.scaleY = 0.25;
+			bitmap.scaleX = 0.74;
+			bitmap.scaleY = 0.74;
 			addChild(bitmap);
 			
 			addEventListener(Event.ADDED_TO_STAGE, addedToStageHandler, false, 0, true);

@@ -29,8 +29,6 @@ void OnImageGrabbed(FlyCapture2::Image* pImage, const void* pCallbackData)
 
 void FC2Manager::onImageGrabbed(FlyCapture2::Image* pImage, const void* pCallbackData){
 	
-	FREDispatchStatusEventAsync(freContext, (const uint8_t*) "frame", (const uint8_t*) "frame");
-
 	FlyCapture2::Error error;
     // Convert the raw image
 	FlyCapture2::Image newImage;
@@ -41,6 +39,7 @@ void FC2Manager::onImageGrabbed(FlyCapture2::Image* pImage, const void* pCallbac
         return;
     }  
 
+	FREDispatchStatusEventAsync(freContext, (const uint8_t*) "frame", (const uint8_t*) "frame");
 }
 
 void FC2Manager::startCamera(int index){
