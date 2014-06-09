@@ -27,25 +27,33 @@ package com.asunnotthesun.adobeair.extensions
 			if (isInstantiated)
 				return;
 			
+			trace("[FlyCapture2Extension] initializer called");
 			try
 			{
 				context = ExtensionContext.createExtensionContext("com.asunnotthesun.adobeair.extensions.FlyCapture2Extension",""); 
 				context.addEventListener(StatusEvent.STATUS, contextStatusHandler, false, 0, true);
 				
+				if(context==null){
+					trace("[FlyCapture2Extension] error createExtensionContext return null");
+				}
+				
 				imageByteArray = new ByteArray();
 				imageData = new BitmapData(1928, 1448, false, 0x000000);
 				
 				context.call("init");
-
+				trace("[FlyCapture2Extension] init complete");
 				isInstantiated = true;
 			}
 			catch (e:Error)
 			{
+				trace("[FlyCapture2Extension] init error");
+				trace(e.message);
 			}
 		}
 		
 		public function getVersion(): String
 		{
+			trace("[FlyCapture2Extension] getVersion called");
 			var versionStr:String = context.call("getVersion") as String;
 			return versionStr;
 		}
@@ -77,7 +85,7 @@ package com.asunnotthesun.adobeair.extensions
 			//imageByteArray.endian = Endian.LITTLE_ENDIAN;
 			imageByteArray.endian = Endian.BIG_ENDIAN;
 			
-			trace('total bytes : ' + imageByteArray.length);
+			//trace('[FlyCapture2Extension] grabImage total bytes : ' + imageByteArray.length);
 			
 			if(imageData!=null && imageByteArray!=null){
 				imageData.setPixels(imageData.rect, imageByteArray);
@@ -105,11 +113,11 @@ package com.asunnotthesun.adobeair.extensions
 		
 		protected function contextStatusHandler(event:StatusEvent):void
 		{
-			trace("statusHander " + event.code);
+			//trace("statusHander " + event.code);
 			if(event.code == "trace"){
-				trace("[FlyCapture2] " + event.level);
+				//trace("[FlyCapture2] " + event.level);
 			}else if(event.code =="frame"){
-				trace("FrameGrabber Callback " + frameCount);
+				//trace("FrameGrabber Callback " + frameCount);
 				frameCount++;
 				dispatchEvent(new Event("frame",true,false));
 			}
